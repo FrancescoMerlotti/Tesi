@@ -1,0 +1,17 @@
+2
+16942
+50
+1
+0.
+0.005
+1000000
+
+
+
+1. Truncation (N)
+2. Seed number [0, 32001]
+3. Decorrelation time
+4. Alpha norm
+5. Alpha argument
+6. Delta psi
+7. Number of steps
