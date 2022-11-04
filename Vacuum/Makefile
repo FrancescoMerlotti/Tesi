@@ -8,4 +8,7 @@ Vacuum.exe : Vacuum.o ../Random/random.o
 	$(CC) Vacuum.o ../Random/random.o -o Vacuum.exe $(CFLAGS)
 
 clean :
-	rm *.o Vacuum.exe
+	rm *.o
+
+output_cl :
+	rm graph_vacuum/*.dat
