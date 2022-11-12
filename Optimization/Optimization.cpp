@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
     psi = psi_best;
     cout << endl << "Simulated annealing execution time: " << difftime(time_sa, time_bs) << " s" << endl;
     // Best phase research
-    for(int igen = 0; igen < 1e7; igen++) {
+    for(int igen = 0; igen < 1e6; igen++) {
         // Replacing the phases
         phi = Phase(1);
         // Tracing the state with the highest QFI
@@ -65,7 +65,26 @@ int main(int argc, char** argv) {
     }
     // Print the best state on file
     PrintBest(1);
-    cout << endl << "Best phases search execution time: " << difftime(time(NULL), time_sa) << " s" << endl;
+    time_t time_ph = time(NULL);
+    cout << endl << "Best phases search execution time: " << difftime(time_ph, time_sa) << " s" << endl;
+    // Fidelity
+    phi = Phase(0);
+    ofstream Fidelity;
+    Fidelity.open("./fidelity" + repository + "/output_fidelity_" + to_string(ntrunc) + ".dat");
+    for(int igen = 0; igen < 1e6; igen++) {
+        // Generating the state randomly
+        psi = Simplex();
+        // Checking the generation
+        while(!Check(psi))
+            psi = Simplex();
+        // Fidelity
+        if(H(psi, phi) >= 8.38) {
+            vector<double> ip = InnerProduct(psi_best, phi_best, psi, phi);
+            Fidelity << setprecision(10) << setw(15) << H(psi, phi) << setw(15) << pow(ip[0], 2) + pow(ip[1], 2) << endl;
+        }
+    }
+    Fidelity.close();
+    cout << endl << "Fidelity calculation execution time: " << difftime(time(NULL), time_ph) << " s" << endl;
     // Execution time estimation
     cout << endl << "Total execution time: " << difftime(time(NULL), time_in) << " seconds" << endl << endl;
 
@@ -81,7 +100,11 @@ void Input() {
     // Input parameters from file
 	Setup >> ngen >> nseed >> dtime >> alpha >> theta >> dpsi >> nstep;
 	Setup.close();
-    theta = ((ntrunc+1)%2) * M_PI;
+    if(theta == 1.)
+        repository = "/pi";
+    if(theta == 0.)
+        repository = "/null";
+    theta *= M_PI;
     // Setting up random number generator
 	Primes.open("../Random/Primes");
 	for(int i = 0; i < nseed; i++)
@@ -136,10 +159,22 @@ vector<double> Vacuum() {
 
 // ---------------------------------------------------
 
+// Norm
 double Norm(vector<double> v) {
     double sum = 0.;
     for(int i = 0; i < v.size(); i++)
         sum += v[i] * v[i];
+    return sum;
+}
+
+// Complex inner product
+vector<double> InnerProduct(vector<double> v1, vector<double> p1, vector<double> v2, vector<double> p2) {
+    vector<double> sum {0., 0.};
+    // assert(v1.size() == p1.size() == v2.size() == p2.size());
+    for(int i = 0; i < v1.size(); i++) {
+        sum[0] += v1[i] * v2[i] * cos(p1[i] - p2[i]);
+        sum[1] += v1[i] * v2[i] * sin(p1[i] - p2[i]);
+    }        
     return sum;
 }
 
@@ -168,9 +203,9 @@ void FollowBest() {
 void Print(int t) {
     ofstream Output;
     if(t==0)
-        Output.open("./output/output_"+to_string(ntrunc)+".dat");
+        Output.open("./output" + repository + "/output_"+to_string(ntrunc)+".dat");
     else
-        Output.open("./output/output_"+to_string(ntrunc)+".dat", ios::app);
+        Output.open("./output" + repository + "/output_"+to_string(ntrunc)+".dat", ios::app);
     for(int i = 0; i <= ntrunc; i++)
         Output << setprecision(10) << setw(25) << psi[i];
     Output << setprecision(10) << setw(25) << MeanNumber(psi) << setw(25) << H(psi, phi) << endl;
@@ -181,9 +216,9 @@ void PrintBest(int f) {
     ofstream Output;
     int prec = 10, wd = 25;
     if(!f)
-        Output.open("./best/output_best_" + to_string(ntrunc) + ".dat");
+        Output.open("./best" + repository + "/output_best_" + to_string(ntrunc) + ".dat");
     else
-        Output.open("./best/output_best_" + to_string(ntrunc) + ".dat", ios::app);
+        Output.open("./best" + repository + "/output_best_" + to_string(ntrunc) + ".dat", ios::app);
     for(int i = 0; i <= ntrunc; i++)
         Output << setprecision(prec) << setw(wd) << psi_best[i] << setw(wd) << phi_best[i] << endl;
     Output << endl << setw(wd) << MeanNumber(psi_best) << setw(wd) << H(psi_best, phi_best) << endl;

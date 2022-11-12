@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
     Print("psi_best", Best());
     cout << "N_tot = " << N1(Best()) << ", H = " << H(Best()) << endl;
     // Fidelity
-    cout << endl << "Fidelity = " << InnerProduct(psi_best, Best()) << endl << endl;
+    cout << endl << "Fidelity = " << pow(InnerProduct(psi_best, Best()), 2) << endl << endl;
 
     return 0;
 }

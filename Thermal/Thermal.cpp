@@ -139,7 +139,7 @@ void Print(string t, vector<double> v, vector<double> p) {
     // Number of photons & quantum Fisher information
     Output << endl << "N_tot = " << MeanNumber(psi_best) << ", H = " << H(psi_best, phi_best) << endl;
     // Fidelity
-    Output << endl << "Fidelity = " << InnerProduct(v, Best()) << endl;
+    Output << endl << "Fidelity = " << pow(InnerProduct(v, Best()), 2) << endl;
     Output.close();
 }
 

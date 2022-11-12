@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
+#include <complex>
 #include <time.h>
 #include <fstream>
 #include <cassert>
@@ -34,6 +35,8 @@ vector<double> psi, phi;
 vector<double> psi_old, phi_old;
 vector<double> psi_best, phi_best;
 
+string repository;
+
 void Input();
 
 vector<double> Simplex();
@@ -41,6 +44,7 @@ vector<double> Phase(int);
 vector<double> Vacuum();
 
 double Norm(vector<double>);
+vector<double> InnerProduct(vector<double>, vector<double>, vector<double>, vector<double>);
 bool Check(vector<double>);
 void Decorrelation();
 void FollowBest();
