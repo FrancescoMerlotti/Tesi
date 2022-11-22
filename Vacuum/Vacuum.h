@@ -17,7 +17,7 @@ int nseed, dtime, ngen;
 int ntrunc;
 
 double qfi = 0.;
-vector<double> psi_best;
+vector<double> psi_best, psi_theo;
 
 void Input();
 
@@ -28,7 +28,6 @@ double Norm(vector<double>);
 double InnerProduct(vector<double>, vector<double>);
 bool Check(vector<double>);
 void Decorrelation();
-void Print(string, vector<double>);
 
 double N1(vector<double>);
 double N2(vector<double>);

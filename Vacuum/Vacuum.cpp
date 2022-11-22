@@ -10,6 +10,8 @@ int main(int argc, char** argv) {
     ntrunc = atoi(argv[1]);
     // Reading paramteres from file
     Input();
+    // Theoretical best
+    psi_theo = Best();
     // Random states QFI calculation
     ofstream Output;
     Output.open("./graph_vacuum/output_vacuum_" + to_string(ntrunc) + ".dat");
@@ -19,17 +21,22 @@ int main(int argc, char** argv) {
             qfi = H(psi);
             psi_best = psi;
         }
-        Output << setw(15) << N1(psi) << setw(15) << H(psi) << endl;
+        Output << setprecision(10) << setw(20) << N1(psi) << setw(20) << H(psi) << endl;
     }
     Output.close();
-    // Best state traced
-    Print("psi", psi_best);
-    cout << "N_tot = " << N1(psi_best) << ", H = " << H(psi_best) << endl;
-    // Analytical best state
-    Print("psi_best", Best());
-    cout << "N_tot = " << N1(Best()) << ", H = " << H(Best()) << endl;
+    // Best output
+    Output.open("./best_vacuum/output_best_"+to_string(ntrunc)+".dat");
+    for(int i = 0; i <= ntrunc; i++)
+        Output << setw(20) << psi_best[i] << endl;
+    Output.close();
     // Fidelity
-    cout << endl << "Fidelity = " << pow(InnerProduct(psi_best, Best()), 2) << endl << endl;
+    Output.open("./fidelity_vacuum/output_fidelity_"+to_string(ntrunc)+".dat");
+    for(int igen = 0; igen < ngen; igen++) {
+        vector<double> psi = Simplex();
+        if(H(psi) > 0.99*qfi)
+            Output << setprecision(10) << setw(20) << H(psi) << setw(20) << pow(InnerProduct(psi, psi_theo), 2) << endl;
+    }
+    Output.close();
 
     return 0;
 }
@@ -111,14 +118,6 @@ bool Check(vector<double> v) {
 void Decorrelation() {
     for(int i = 0; i < dtime; i++)
         rnd.Rannyu();
-}
-
-// Print vector<double>
-void Print(string t, vector<double> v) {
-    cout << endl << t << ":" << endl;
-    for(int i = 0; i < v.size(); i++)
-        cout << "(" << v[i] << ")" << endl;
-    cout << endl;
 }
 
 // ---------------------------------------------------
